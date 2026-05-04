@@ -1,17 +1,31 @@
 package org.padroes;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import org.padroes.observer.AppClienteObserver;
+import org.padroes.observer.AppEntregadorObserver;
+import org.padroes.observer.PainelCozinhaObserver;
+import org.padroes.observer.Pedido;
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        Pedido pedido = new Pedido("PED-1001");
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+        AppClienteObserver cliente = new AppClienteObserver("Joao");
+        PainelCozinhaObserver cozinha = new PainelCozinhaObserver();
+        AppEntregadorObserver entregador = new AppEntregadorObserver("Marcos");
+
+        pedido.subscribe(cliente);
+        pedido.subscribe(cozinha);
+        pedido.subscribe(entregador);
+
+        System.out.println("=== Fluxo do pedido " + pedido.getCodigo() + " ===");
+
+        pedido.atualizarStatus(Pedido.Status.CRIADO);
+        pedido.atualizarStatus(Pedido.Status.PREPARANDO);
+
+        System.out.println("\n--- Cozinha nao precisa mais receber eventos deste pedido ---");
+        pedido.unsubscribe(cozinha);
+
+        pedido.atualizarStatus(Pedido.Status.SAIU_PARA_ENTREGA);
+        pedido.atualizarStatus(Pedido.Status.ENTREGUE);
     }
 }
